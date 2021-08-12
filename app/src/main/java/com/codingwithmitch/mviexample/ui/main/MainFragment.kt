@@ -140,6 +140,7 @@ class MainFragment : Fragment(),
 
     }
 
+
     private fun triggerGetUserEvent() {
         viewModel.setStateEvent(GetUserEvent("1"))
     }

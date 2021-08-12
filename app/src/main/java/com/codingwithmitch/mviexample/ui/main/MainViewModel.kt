@@ -29,24 +29,13 @@ class MainViewModel : ViewModel() {
             }
         }
 
-    fun handleStateEvent(stateEvent: MainStateEvent): LiveData<DataState<MainViewState>> {
-        println("DEBUG: New StateEvent detected: $stateEvent")
-        when (stateEvent) {
-
-            is GetBlogPostsEvent -> {
-                return Repository.getBlogPosts()
-            }
-
-            is GetUserEvent -> {
-                return Repository.getUser(stateEvent.userId)
-            }
-
-            is None -> {
-                return AbsentLiveData.create()
-            }
-        }
+    fun setStateEvent(event: MainStateEvent) {
+        _stateEvent.value = event
     }
 
+    /**
+     * Updated blog posts in view state
+     */
     fun setBlogListData(blogPosts: List<BlogPost>) {
         _viewState.value = getCurrentViewStateOrNew().run {
             this.blogPosts = blogPosts
@@ -55,7 +44,7 @@ class MainViewModel : ViewModel() {
     }
 
     /**
-     * Update user field in view state.
+     * Update user field in view state
      */
     fun setUser(user: User) {
         _viewState.value = getCurrentViewStateOrNew().run {
@@ -64,15 +53,21 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun setStateEvent(event: MainStateEvent) {
-        _stateEvent.value = event
-    }
+    // private
 
     /**
-     * Return existing view state else default.
+     * Return existing view state
      */
     private fun getCurrentViewStateOrNew(): MainViewState {
         return viewState.value?.let { it } ?: MainViewState()
+    }
+
+    private fun handleStateEvent(stateEvent: MainStateEvent): LiveData<DataState<MainViewState>> {
+        return when (stateEvent) {
+            is GetBlogPostsEvent -> { Repository.getBlogPosts() }
+            is GetUserEvent -> { Repository.getUser(stateEvent.userId) }
+            is None -> { AbsentLiveData.create() }
+        }
     }
 }
 
