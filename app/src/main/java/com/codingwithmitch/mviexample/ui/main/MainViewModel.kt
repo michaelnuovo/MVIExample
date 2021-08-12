@@ -22,8 +22,8 @@ class MainViewModel : ViewModel() {
         get() = _viewState
 
 
-    val dataState: LiveData<DataState<MainViewState>> = Transformations
-        .switchMap(_stateEvent) { stateEvent ->
+    val dataState: LiveData<DataState<MainViewState>> =
+        Transformations.switchMap(_stateEvent) { stateEvent ->
             stateEvent?.let {
                 handleStateEvent(stateEvent)
             }
@@ -34,7 +34,7 @@ class MainViewModel : ViewModel() {
     }
 
     /**
-     * Updated blog posts in view state
+     * Update blog posts in view state
      */
     fun setBlogListData(blogPosts: List<BlogPost>) {
         _viewState.value = getCurrentViewStateOrNew().run {
