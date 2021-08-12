@@ -61,7 +61,6 @@ class MainFragment : Fragment(),
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_get_blogs -> triggerGetBlogsEvent()
-
             R.id.action_get_user -> triggerGetUserEvent()
         }
 
