@@ -24,6 +24,19 @@ class MainFragment : Fragment(),
     lateinit var dataStateHandler: DataStateListener
     lateinit var mainRecyclerAdapter: MainRecyclerAdapter
 
+    private fun subscribeObservers() {
+        subscribeDataStateObserver()
+        subscribeViewStateObserver()
+    }
+
+    private fun triggerGetUserEvent() {
+        viewModel.emitStateEventToVm(GetUserEvent("1"))
+    }
+
+    private fun triggerGetBlogsEvent() {
+        viewModel.emitStateEventToVm(GetBlogPostsEvent())
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -69,10 +82,7 @@ class MainFragment : Fragment(),
 
     // private
 
-    private fun subscribeObservers() {
-        subscribeDataStateObserver()
-        subscribeViewStateObserver()
-    }
+
 
     private fun initRecyclerView() {
         recycler_view.apply {
@@ -88,20 +98,20 @@ class MainFragment : Fragment(),
      * Receive indicated data provided by the repository.
      */
     private fun subscribeDataStateObserver() {
-        viewModel.dataState.observe(viewLifecycleOwner, Observer { dataState ->
+        viewModel.dataStateEvent.observe(viewLifecycleOwner, Observer { dataState ->
             handleLoadingAndMessage(dataState)
-            handleData(dataState)
+            updateObservableViewState(dataState)
         })
     }
 
     /**
      *
      */
-    private fun handleData(dataState: DataState<MainViewState>){
+    private fun updateObservableViewState(dataState: DataState<MainViewState>){
         dataState.data?.let { event ->
             event.getContentIfNotHandled()?.let { mainViewState ->
-                mainViewState.blogPosts?.let { viewModel.setBlogListData(it) }
-                mainViewState.user?.let { viewModel.setUser(it) }
+                mainViewState.blogPosts?.let { viewModel.emitBlogListDataToUi(it) }
+                mainViewState.user?.let { viewModel.emitUserDataToUi(it) }
             }
         }
     }
@@ -112,19 +122,28 @@ class MainFragment : Fragment(),
 
     private fun subscribeViewStateObserver() {
         viewModel.viewState.observe(viewLifecycleOwner, Observer { viewState ->
-            viewState.blogPosts?.let { blogPosts ->
-                // set BlogPosts to RecyclerView
-                println("DEBUG: Setting blog posts to RecyclerView: ${blogPosts}")
-                mainRecyclerAdapter.submitList(blogPosts)
-            }
-
-            viewState.user?.let { user ->
-                // set User data to widgets
-                println("DEBUG: Setting User data: ${user}")
-                setUserProperties(user)
-
-            }
+            updateUi(viewState)
         })
+    }
+
+    private fun updateViewState()
+    {
+
+    }
+
+    private fun updateUi(viewState : MainViewState)
+    {
+        viewState.blogPosts?.let { blogPosts ->
+            // set BlogPosts to RecyclerView
+            println("DEBUG: Setting blog posts to RecyclerView: ${blogPosts}")
+            mainRecyclerAdapter.submitList(blogPosts)
+        }
+
+        viewState.user?.let { user ->
+            // set User data to widgets
+            println("DEBUG: Setting User data: ${user}")
+            setUserProperties(user)
+        }
     }
 
     private fun setUserProperties(user: User) {
@@ -140,13 +159,7 @@ class MainFragment : Fragment(),
     }
 
 
-    private fun triggerGetUserEvent() {
-        viewModel.setStateEvent(GetUserEvent("1"))
-    }
 
-    private fun triggerGetBlogsEvent() {
-        viewModel.setStateEvent(GetBlogPostsEvent())
-    }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)

@@ -15,25 +15,24 @@ import com.codingwithmitch.mviexample.util.DataState
 
 class MainViewModel : ViewModel() {
 
-    private val _stateEvent: MutableLiveData<MainStateEvent> = MutableLiveData()
     private val _viewState: MutableLiveData<MainViewState> = MutableLiveData()
-
     val viewState: LiveData<MainViewState>
         get() = _viewState
 
-    val dataState: LiveData<DataState<MainViewState>> =
-        Transformations.switchMap(_stateEvent) { stateEvent ->
+    private val _dataStateEvent: MutableLiveData<MainStateEvent> = MutableLiveData()
+    val dataStateEvent: LiveData<DataState<MainViewState>>
+        get() = Transformations.switchMap(_dataStateEvent) { stateEvent ->
             stateEvent?.let { handleStateEvent(stateEvent) }
         }
 
-    fun setStateEvent(event: MainStateEvent) {
-        _stateEvent.value = event
+    fun emitStateEventToVm(event: MainStateEvent) {
+        _dataStateEvent.value = event
     }
 
     /**
      * Update blog posts in view state
      */
-    fun setBlogListData(blogPosts: List<BlogPost>) {
+    fun emitBlogListDataToUi(blogPosts: List<BlogPost>) {
         _viewState.value = getCurrentViewStateOrNew().run {
             this.blogPosts = blogPosts
             this
@@ -43,7 +42,7 @@ class MainViewModel : ViewModel() {
     /**
      * Update user field in view state
      */
-    fun setUser(user: User) {
+    fun emitUserDataToUi(user: User) {
         _viewState.value = getCurrentViewStateOrNew().run {
             this.user = user
             this
