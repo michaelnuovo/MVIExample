@@ -13,7 +13,7 @@ import com.codingwithmitch.mviexample.ui.main.state.MainViewState
 import com.codingwithmitch.mviexample.util.AbsentLiveData
 import com.codingwithmitch.mviexample.util.DataState
 
-class MainViewModel : ViewModel(){
+class MainViewModel : ViewModel() {
 
     private val _stateEvent: MutableLiveData<MainStateEvent> = MutableLiveData()
     private val _viewState: MutableLiveData<MainViewState> = MutableLiveData()
@@ -23,15 +23,15 @@ class MainViewModel : ViewModel(){
 
 
     val dataState: LiveData<DataState<MainViewState>> = Transformations
-        .switchMap(_stateEvent){stateEvent ->
+        .switchMap(_stateEvent) { stateEvent ->
             stateEvent?.let {
                 handleStateEvent(stateEvent)
             }
         }
 
-    fun handleStateEvent(stateEvent: MainStateEvent): LiveData<DataState<MainViewState>>{
+    fun handleStateEvent(stateEvent: MainStateEvent): LiveData<DataState<MainViewState>> {
         println("DEBUG: New StateEvent detected: $stateEvent")
-        when(stateEvent){
+        when (stateEvent) {
 
             is GetBlogPostsEvent -> {
                 return Repository.getBlogPosts()
@@ -41,35 +41,38 @@ class MainViewModel : ViewModel(){
                 return Repository.getUser(stateEvent.userId)
             }
 
-            is None ->{
+            is None -> {
                 return AbsentLiveData.create()
             }
         }
     }
 
-    fun setBlogListData(blogPosts: List<BlogPost>){
-        val update = getCurrentViewStateOrNew()
-        update.blogPosts = blogPosts
-        _viewState.value = update
+    fun setBlogListData(blogPosts: List<BlogPost>) {
+        _viewState.value = getCurrentViewStateOrNew().run {
+            this.blogPosts = blogPosts
+            this
+        }
     }
 
-    fun setUser(user: User){
-        val update = getCurrentViewStateOrNew()
-        update.user = user
-        _viewState.value = update
+    /**
+     * Update user field in view state.
+     */
+    fun setUser(user: User) {
+        _viewState.value = getCurrentViewStateOrNew().run {
+            this.user = user
+            this
+        }
     }
 
-    fun getCurrentViewStateOrNew(): MainViewState {
-        val value = viewState.value?.let{
-            it
-        }?: MainViewState()
-        return value
+    fun setStateEvent(event: MainStateEvent) {
+        _stateEvent.value = event
     }
 
-    fun setStateEvent(event: MainStateEvent){
-        val state: MainStateEvent
-        state = event
-        _stateEvent.value = state
+    /**
+     * Return existing view state else default.
+     */
+    private fun getCurrentViewStateOrNew(): MainViewState {
+        return viewState.value?.let { it } ?: MainViewState()
     }
 }
 

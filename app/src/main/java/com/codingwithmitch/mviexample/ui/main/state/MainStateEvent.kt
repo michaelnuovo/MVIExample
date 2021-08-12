@@ -9,6 +9,4 @@ sealed class MainStateEvent {
     ): MainStateEvent()
 
     class None: MainStateEvent()
-
-
 }
