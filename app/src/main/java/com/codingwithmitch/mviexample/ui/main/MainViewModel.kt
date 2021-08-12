@@ -21,7 +21,6 @@ class MainViewModel : ViewModel() {
     val viewState: LiveData<MainViewState>
         get() = _viewState
 
-
     val dataState: LiveData<DataState<MainViewState>> =
         Transformations.switchMap(_stateEvent) { stateEvent ->
             stateEvent?.let {
@@ -62,6 +61,9 @@ class MainViewModel : ViewModel() {
         return viewState.value?.let { it } ?: MainViewState()
     }
 
+    /**
+     *
+     */
     private fun handleStateEvent(stateEvent: MainStateEvent): LiveData<DataState<MainViewState>> {
         return when (stateEvent) {
             is GetBlogPostsEvent -> { Repository.getBlogPosts() }
