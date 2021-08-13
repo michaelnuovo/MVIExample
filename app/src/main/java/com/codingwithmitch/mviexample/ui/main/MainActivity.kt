@@ -17,13 +17,13 @@ class MainActivity : AppCompatActivity(),
         handleDataStateChange(dataState)
     }
 
-    lateinit var viewModel: MainViewModel
+    lateinit var viewModel: MainDataViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(MainDataViewModel::class.java)
 
         showMainFragment()
     }

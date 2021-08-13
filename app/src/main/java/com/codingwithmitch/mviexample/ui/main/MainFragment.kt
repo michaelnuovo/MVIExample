@@ -12,7 +12,7 @@ import com.codingwithmitch.mviexample.R
 import com.codingwithmitch.mviexample.model.BlogPost
 import com.codingwithmitch.mviexample.model.User
 import com.codingwithmitch.mviexample.ui.DataStateListener
-import com.codingwithmitch.mviexample.ui.main.state.MainStateEvent.*
+import com.codingwithmitch.mviexample.ui.main.state.DataRequestEvent.*
 import com.codingwithmitch.mviexample.ui.main.state.MainViewState
 import com.codingwithmitch.mviexample.util.DataState
 import com.codingwithmitch.mviexample.util.TopSpacingItemDecoration
@@ -20,7 +20,7 @@ import kotlinx.android.synthetic.main.fragment_main.*
 
 class MainFragment : Fragment(),
     MainRecyclerAdapter.Interaction {
-    lateinit var viewModel: MainViewModel
+    lateinit var viewModel: MainDataViewModel
     lateinit var dataStateHandler: DataStateListener
     lateinit var mainRecyclerAdapter: MainRecyclerAdapter
 
@@ -30,11 +30,11 @@ class MainFragment : Fragment(),
     }
 
     private fun triggerGetUserEvent() {
-        viewModel.emitStateEventToVm(GetUserEvent("1"))
+        viewModel.emitDataEvent(GetUserEvent("1"))
     }
 
     private fun triggerGetBlogsEvent() {
-        viewModel.emitStateEventToVm(GetBlogPostsEvent())
+        viewModel.emitDataEvent(GetBlogPostsEvent())
     }
 
     override fun onCreateView(
@@ -50,7 +50,7 @@ class MainFragment : Fragment(),
         setHasOptionsMenu(true)
 
         viewModel = activity?.run {
-            ViewModelProvider(this).get(MainViewModel::class.java)
+            ViewModelProvider(this).get(MainDataViewModel::class.java)
         } ?: throw Exception("Invalid Activity")
 
         subscribeObservers()

@@ -47,6 +47,4 @@ class Event<T>(private val content: T) {
             return null
         }
     }
-
-
 }

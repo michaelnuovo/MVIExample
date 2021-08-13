@@ -7,25 +7,25 @@ import androidx.lifecycle.ViewModel
 import com.codingwithmitch.mviexample.model.BlogPost
 import com.codingwithmitch.mviexample.model.User
 import com.codingwithmitch.mviexample.repository.Repository
-import com.codingwithmitch.mviexample.ui.main.state.MainStateEvent
-import com.codingwithmitch.mviexample.ui.main.state.MainStateEvent.*
+import com.codingwithmitch.mviexample.ui.main.state.DataRequestEvent
+import com.codingwithmitch.mviexample.ui.main.state.DataRequestEvent.*
 import com.codingwithmitch.mviexample.ui.main.state.MainViewState
 import com.codingwithmitch.mviexample.util.AbsentLiveData
 import com.codingwithmitch.mviexample.util.DataState
 
-class MainViewModel : ViewModel() {
+class MainDataViewModel : ViewModel() {
 
     private val _viewState: MutableLiveData<MainViewState> = MutableLiveData()
     val viewState: LiveData<MainViewState>
         get() = _viewState
 
-    private val _dataStateEvent: MutableLiveData<MainStateEvent> = MutableLiveData()
+    private val _dataStateEvent: MutableLiveData<DataRequestEvent> = MutableLiveData()
     val dataStateEvent: LiveData<DataState<MainViewState>>
         get() = Transformations.switchMap(_dataStateEvent) { stateEvent ->
             stateEvent?.let { handleStateEvent(stateEvent) }
         }
 
-    fun emitStateEventToVm(event: MainStateEvent) {
+    fun emitDataEvent(event: DataRequestEvent) {
         _dataStateEvent.value = event
     }
 
@@ -61,7 +61,7 @@ class MainViewModel : ViewModel() {
     /**
      *
      */
-    private fun handleStateEvent(stateEvent: MainStateEvent): LiveData<DataState<MainViewState>> {
+    private fun handleStateEvent(stateEvent: DataRequestEvent): LiveData<DataState<MainViewState>> {
         return when (stateEvent) {
             is GetBlogPostsEvent -> { Repository.getBlogPosts() }
             is GetUserEvent -> { Repository.getUser(stateEvent.userId) }

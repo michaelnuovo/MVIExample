@@ -9,11 +9,7 @@ import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
 class LiveDataCallAdapterFactory : Factory() {
-    override fun get(
-        returnType: Type,
-        annotations: Array<Annotation>,
-        retrofit: Retrofit
-    ): CallAdapter<*, *>? {
+    override fun get(returnType: Type, annotations: Array<Annotation>, retrofit: Retrofit): CallAdapter<*, *>? {
         if (Factory.getRawType(returnType) != LiveData::class.java) {
             return null
         }
@@ -28,4 +24,6 @@ class LiveDataCallAdapterFactory : Factory() {
         val bodyType = Factory.getParameterUpperBound(0, observableType)
         return LiveDataCallAdapter<Any>(bodyType)
     }
+
+
 }

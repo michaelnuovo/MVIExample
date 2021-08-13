@@ -11,6 +11,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+/**
+ * Copied from Architecture components google sample:
+ * https://github.com/android/architecture-components-samples/blob/88747993139224a4bb6dbe985adf652d557de621/GithubBrowserSample/app/src/main/java/com/android/example/github/repository/NetworkBoundResource.kt
+ */
 abstract class NetworkBoundResource<ResponseObject, ViewStateType> {
 
     protected val result = MediatorLiveData<DataState<ViewStateType>>()
