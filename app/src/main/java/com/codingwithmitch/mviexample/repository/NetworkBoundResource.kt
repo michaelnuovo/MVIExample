@@ -23,10 +23,10 @@ abstract class NetworkBoundResource<ResponseObject, ViewStateType> {
         result.value = DataState.loading(true)
 
 
-        GlobalScope.launch(IO){
+        GlobalScope.launch(IO) {
             delay(TESTING_NETWORK_DELAY)
 
-            withContext(Main){
+            withContext(Main) {
                 val apiResponse = createCall()
                 result.addSource(apiResponse) { response ->
                     result.removeSource(apiResponse)
@@ -37,24 +37,24 @@ abstract class NetworkBoundResource<ResponseObject, ViewStateType> {
         }
     }
 
-    fun handleNetworkCall(response: GenericApiResponse<ResponseObject>){
+    fun handleNetworkCall(response: GenericApiResponse<ResponseObject>) {
 
-        when(response){
-            is ApiSuccessResponse ->{
+        when (response) {
+            is ApiSuccessResponse -> {
                 handleApiSuccessResponse(response)
             }
-            is ApiErrorResponse ->{
+            is ApiErrorResponse -> {
                 println("DEBUG: NetworkBoundResource: ${response.errorMessage}")
                 onReturnError(response.errorMessage)
             }
-            is ApiEmptyResponse ->{
+            is ApiEmptyResponse -> {
                 println("DEBUG: NetworkBoundResource: Request returned NOTHING (HTTP 204)")
                 onReturnError("HTTP 204. Returned NOTHING.")
             }
         }
     }
 
-    fun onReturnError(message: String){
+    fun onReturnError(message: String) {
         result.value = DataState.error(message)
     }
 
